@@ -69,31 +69,12 @@ namespace AbySalto.Junior.Controllers
 
         [HttpPatch]
         [Route("orders/{orderId}/status")]
-        public async Task<IActionResult> Update([FromRoute] int orderId, [FromBody] UpdateOrderDto updateOrderDto, CancellationToken ct)
+        public async Task<IActionResult> UpdateStatus([FromRoute] int orderId, [FromBody] UpdateOrderDto updateOrderDto, CancellationToken ct)
         {
             try
             {
                 await _orderService.UpdateStatus(orderId, updateOrderDto, ct);
                 return NoContent();
-            }
-            catch (ValidationException ex)
-            {
-                return BadRequest(new
-                {
-                    message = "Validation failed.",
-                    errors = ex.Errors.Select(e => new
-                    {
-                        field = e.PropertyName,
-                        message = e.ErrorMessage
-                    })
-                });
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound(new
-                {
-                    message = $"Order with id {orderId} not found."
-                });
             }
             catch (Exception)
             {
@@ -111,13 +92,6 @@ namespace AbySalto.Junior.Controllers
             {
                 var total = await _orderService.GetOrderTotal(id, ct);
                 return Ok(total);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound(new
-                {
-                    message = $"Order with id {id} not found."
-                });
             }
             catch (Exception)
             {
