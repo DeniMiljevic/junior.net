@@ -1,5 +1,6 @@
-
 using AbySalto.Junior.Infrastructure.Database;
+using AbySalto.Junior.Services;
+using AbySalto.Junior.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -22,6 +23,8 @@ namespace AbySalto.Junior
 
             builder.Services.AddDbContext<IApplicationDbContext, ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddScoped<IOrderService, OrderService>();
 
             var app = builder.Build();
 

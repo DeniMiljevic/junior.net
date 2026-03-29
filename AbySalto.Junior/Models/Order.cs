@@ -1,4 +1,5 @@
 ﻿using AbySalto.Junior.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AbySalto.Junior.Models;
 
@@ -13,5 +14,7 @@ public class Order
     public string ContactNumber { get; set; }
     public string Remark { get; set; }
     public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
+    [NotMapped]
+    public decimal TotalAmount => Items?.Sum(i => i.Price * i.Quantity) ?? 0;
 
 }
