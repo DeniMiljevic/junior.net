@@ -29,6 +29,7 @@ namespace AbySalto.Junior.Infrastructure.Database
             modelBuilder.Entity<Item>(b =>
             {
                 b.Property(i => i.Name).HasMaxLength(100);
+                b.Property(i => i.Price).HasColumnType("decimal(18,2)");
             });
 
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);

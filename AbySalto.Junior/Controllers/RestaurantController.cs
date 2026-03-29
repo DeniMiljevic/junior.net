@@ -1,6 +1,6 @@
-﻿using AbySalto.Junior.DTO;
-using AbySalto.Junior.Enums;
+using AbySalto.Junior.DTO;
 using AbySalto.Junior.Services.Interfaces;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AbySalto.Junior.Controllers
@@ -20,15 +20,32 @@ namespace AbySalto.Junior.Controllers
         [Route("orders")]
         public async Task<IActionResult> Create([FromBody] CreateOrderDto order, CancellationToken ct)
         {
-            if (order == null) return BadRequest("Order data is required.");
             try
             {
                 await _orderService.Create(order, ct);
-                return Ok("Order created successfully.");
+
+                return Ok();
+            }
+            catch (ValidationException ex)
+            {
+                var errors = ex.Errors.Select(e => new
+                {
+                    field = e.PropertyName,
+                    message = e.ErrorMessage
+                });
+
+                return BadRequest(new
+                {
+                    message = "Validation failed.",
+                    errors
+                });
             }
             catch (Exception)
             {
-                return StatusCode(500, "An error occurred while creating the order.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    message = "Internal server error."
+                });
             }
         }
 
@@ -43,7 +60,10 @@ namespace AbySalto.Junior.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, "An error occurred while retrieving orders.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    message = "Internal server error."
+                });
             }
         }
 
@@ -53,20 +73,59 @@ namespace AbySalto.Junior.Controllers
         {
             try
             {
-                await _orderService.Update(orderId, updateOrderDto, ct);
+                await _orderService.UpdateStatus(orderId, updateOrderDto, ct);
                 return NoContent();
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(new
+                {
+                    message = "Validation failed.",
+                    errors = ex.Errors.Select(e => new
+                    {
+                        field = e.PropertyName,
+                        message = e.ErrorMessage
+                    })
+                });
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(new
+                {
+                    message = $"Order with id {orderId} not found."
+                });
             }
             catch (Exception)
             {
-                return StatusCode(500, "An error occurred while creating the order.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    message = "Internal server error."
+                });
             }
         }
 
         [HttpGet("orders/{id}/total")]
         public async Task<IActionResult> GetTotal(int id, CancellationToken ct)
         {
-            var total = await _orderService.GetOrderTotalAsync(id, ct);
-            return Ok(new { total });
+            try
+            {
+                var total = await _orderService.GetOrderTotal(id, ct);
+                return Ok(total);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(new
+                {
+                    message = $"Order with id {id} not found."
+                });
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    message = "Internal server error."
+                });
+            }
         }
     }
 }

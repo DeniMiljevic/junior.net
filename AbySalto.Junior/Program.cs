@@ -1,6 +1,9 @@
+using AbySalto.Junior.DTO;
 using AbySalto.Junior.Infrastructure.Database;
 using AbySalto.Junior.Services;
 using AbySalto.Junior.Services.Interfaces;
+using AbySalto.Junior.Validations;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -25,6 +28,7 @@ namespace AbySalto.Junior
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddScoped<IValidator<CreateOrderDto>, CreateOrderValidator>();
 
             var app = builder.Build();
 

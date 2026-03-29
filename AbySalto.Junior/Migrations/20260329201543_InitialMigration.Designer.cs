@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AbySalto.Junior.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260328143543_InitialMigration")]
+    [Migration("20260329201543_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -38,6 +38,9 @@ namespace AbySalto.Junior.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Items");
@@ -60,6 +63,9 @@ namespace AbySalto.Junior.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("Currency")
+                        .HasColumnType("int");
 
                     b.Property<string>("DeliveryAddress")
                         .IsRequired()
